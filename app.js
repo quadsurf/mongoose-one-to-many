@@ -9,6 +9,9 @@ app.use(methodOverride('_method'));
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended:true}));
 
+
+/********* AUTHORS ROUTES *********/
+
 // ROOT
 app.get('/', function(req,res){
   res.redirect("/authors");
@@ -95,18 +98,6 @@ app.delete('/authors/:id', function(req,res){
 
 // INDEX
 app.get('/authors/:author_id/books', function(req,res){
-  // db.Author.findById(req.params.author_id,
-  //   function (err, author) {
-  //     db.Book.find(
-  //     {
-  //       _id: {$in: author.books}
-  //     },
-  //     function(err, books){
-  //       res.render("books/index", {author:author, books:books});
-  //     });
-  //   });
-
-  // REFACTOR USING POPULATE
   db.Author.findById(req.params.author_id).populate('books').exec(function(err,author){
     res.render("books/index", {author:author});
   });
@@ -122,7 +113,8 @@ app.get('/authors/:author_id/books/new', function(req,res){
 
 // CREATE
 app.post('/authors/:author_id/books', function(req,res){
-  db.Book.create({title:req.body.title,}, function(err, book){
+  db.Book.create({title:req.body.title}, function(err, book){
+    console.log(book)
     if(err) {
       console.log(err);
       res.render("books/new");
@@ -141,15 +133,6 @@ app.post('/authors/:author_id/books', function(req,res){
 
 // SHOW
 app.get('/authors/:author_id/books/:id', function(req,res){
-  // db.Author.findById(req.params.author_id,
-  //     function (err, author) {
-  //       db.Book.findById(req.params.id,
-  //       function(err, book){
-  //         res.render("books/show", {author:author,book:book});
-  //       });
-  //     });
-
-  // REFACTOR USING POPULATE
   db.Book.findById(req.params.id)
     .populate('author')
     .exec(function(err,book){
@@ -160,15 +143,6 @@ app.get('/authors/:author_id/books/:id', function(req,res){
 
 // EDIT
 app.get('/authors/:author_id/books/:id/edit', function(req,res){
-  // db.Author.findById(req.params.author_id,
-  //     function (err, author) {
-  //       db.Book.findById(req.params.id,
-  //       function(err, book){
-  //         res.render("books/edit", {author:author,book:book});
-  //       });
-  //     });
-
-  // REFACTOR USING POPULATE
   db.Book.findById(req.params.id)
     .populate('author')
     .exec(function(err,book){
@@ -180,7 +154,7 @@ app.get('/authors/:author_id/books/:id/edit', function(req,res){
 app.put('/authors/:author_id/books/:id', function(req,res){
  db.Book.findByIdAndUpdate(req.params.id, {title:req.body.title},
      function (err, book) {
-       if(err) {
+       if(err) {  
          res.render("books/edit");
        }
        else {
