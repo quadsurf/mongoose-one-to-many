@@ -12,7 +12,7 @@ var authorSchema = new mongoose.Schema({
 
 
 authorSchema.pre('remove', function(callback) {
-    Book.remove({author_id: this._id}).exec();
+    Book.remove({author: this._id}).exec();
     callback();
 });
 
